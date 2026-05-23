@@ -1131,6 +1131,313 @@ function MemoryQuestion({
 	);
 }
 
+/* ---------- Free writing (看图写话) ---------- */
+// Open-ended: the child writes (here or on paper) guided by the tips. There is
+// no right answer — a parent reviews the writing and awards stars at the end.
+function WriteQuestion({
+	question,
+	value,
+	onChange,
+	onDone,
+	qNum,
+	qTotal,
+}: {
+	question: Question;
+	value: string;
+	onChange: (v: string) => void;
+	onDone: () => void;
+	qNum: number;
+	qTotal: number;
+}) {
+	return (
+		<div
+			style={{
+				textAlign: "center",
+				padding: "16px clamp(12px, 4vw, 30px)",
+				position: "relative",
+				zIndex: 1,
+			}}
+		>
+			{question.image && (
+				<div
+					style={{
+						marginBottom: 20,
+						display: "flex",
+						justifyContent: "center",
+					}}
+				>
+					<div
+						style={{
+							width: "clamp(104px, 30vw, 150px)",
+							height: "clamp(104px, 30vw, 150px)",
+							borderRadius: 24,
+							background: "#FFFFFF",
+							border: "4px solid #1A2B4A",
+							boxShadow: "0 6px 0 #1A2B4A",
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+						}}
+					>
+						<PicIcon name={question.image} size={96} />
+					</div>
+				</div>
+			)}
+			<div
+				style={{
+					background: "#FFFFFF",
+					borderRadius: 24,
+					padding: "clamp(18px, 5vw, 30px) clamp(20px, 6vw, 36px)",
+					border: "4px solid #1A2B4A",
+					boxShadow: "0 8px 0 #1A2B4A",
+					width: "100%",
+					maxWidth: 560,
+					margin: "0 auto clamp(20px, 5vw, 30px)",
+					boxSizing: "border-box",
+					textAlign: "left",
+				}}
+			>
+				<div
+					style={{
+						fontSize: 14,
+						color: "#7080A0",
+						fontWeight: 700,
+						marginBottom: 8,
+						textAlign: "center",
+					}}
+				>
+					第 {qNum} 题 / 共 {qTotal} 题
+				</div>
+				<div
+					style={{
+						fontSize: "clamp(20px, 5vw, 32px)",
+						fontWeight: 800,
+						color: "#1A2B4A",
+						whiteSpace: "pre-line",
+						lineHeight: 1.3,
+						textAlign: "center",
+					}}
+				>
+					{question.q}
+				</div>
+
+				{question.tips && question.tips.length > 0 && (
+					<div
+						style={{
+							marginTop: 18,
+							background: "#FFF8E7",
+							border: "3px dashed #FFD93D",
+							borderRadius: 16,
+							padding: "14px 18px",
+						}}
+					>
+						<div
+							style={{
+								fontSize: 15,
+								fontWeight: 800,
+								color: "#C99800",
+								marginBottom: 10,
+							}}
+						>
+							✍️ 写作小提示
+						</div>
+						<ul
+							style={{
+								margin: 0,
+								paddingLeft: 20,
+								display: "flex",
+								flexDirection: "column",
+								gap: 8,
+							}}
+						>
+							{question.tips.map((tip) => (
+								<li
+									key={tip}
+									style={{ fontSize: 16, lineHeight: 1.4, color: "#2D3F5E" }}
+								>
+									{tip}
+								</li>
+							))}
+						</ul>
+					</div>
+				)}
+
+				<textarea
+					value={value}
+					onChange={(e) => onChange(e.target.value)}
+					placeholder="在这里写一写，也可以写在纸上～"
+					rows={4}
+					style={{
+						width: "100%",
+						marginTop: 18,
+						fontSize: 18,
+						fontWeight: 600,
+						lineHeight: 1.6,
+						padding: "12px 14px",
+						border: "3px solid #1A2B4A",
+						borderRadius: 14,
+						fontFamily: "inherit",
+						color: "#1A2B4A",
+						outline: "none",
+						resize: "vertical",
+						boxSizing: "border-box",
+					}}
+				/>
+			</div>
+
+			<BigButton
+				color="#4ECDC4"
+				shadow="#2A8E89"
+				onClick={() => {
+					SFX.tap();
+					onDone();
+				}}
+				size="lg"
+			>
+				写好了 →
+			</BigButton>
+		</div>
+	);
+}
+
+// Shown after the child finishes a free-writing quiz. A parent reads the
+// writing and taps a star rating, which becomes the lesson's score.
+function ParentReview({
+	quiz,
+	answers,
+	onRate,
+	onRetry,
+}: {
+	quiz: Quiz;
+	answers: string[];
+	onRate: (stars: number) => void;
+	onRetry: () => void;
+}) {
+	const ratings: { stars: number; label: string }[] = [
+		{ stars: 1, label: "⭐ 加油" },
+		{ stars: 2, label: "⭐⭐ 不错" },
+		{ stars: 3, label: "⭐⭐⭐ 很棒" },
+	];
+	return (
+		<div style={{ position: "absolute", inset: 0, overflow: "auto" }}>
+			<SkyBackground />
+			<div
+				style={{
+					position: "relative",
+					zIndex: 1,
+					maxWidth: 600,
+					margin: "0 auto",
+					padding: "24px clamp(14px, 4vw, 30px) 40px",
+				}}
+			>
+				<h1
+					style={{
+						textAlign: "center",
+						fontSize: "clamp(24px, 6vw, 34px)",
+						color: "#1A2B4A",
+						margin: "0 0 6px",
+						fontFamily: '"ZCOOL KuaiLe", "Baloo 2", system-ui',
+					}}
+				>
+					请爸爸妈妈看一看 👀
+				</h1>
+				<p
+					style={{
+						textAlign: "center",
+						fontSize: 15,
+						fontWeight: 700,
+						color: "#4A6080",
+						margin: "0 0 22px",
+					}}
+				>
+					看图写话没有标准答案，请家长读一读孩子写的，再给个鼓励的星星。
+				</p>
+
+				{quiz.questions.map((q, i) => (
+					<div
+						key={q.image ?? i}
+						style={{
+							background: "#FFFFFF",
+							borderRadius: 18,
+							border: "3px solid #1A2B4A",
+							boxShadow: "0 5px 0 #1A2B4A",
+							padding: "16px 18px",
+							marginBottom: 16,
+						}}
+					>
+						<div
+							style={{
+								fontSize: 15,
+								fontWeight: 800,
+								color: "#7080A0",
+								marginBottom: 8,
+								whiteSpace: "pre-line",
+							}}
+						>
+							{q.q}
+						</div>
+						<div
+							style={{
+								fontSize: 18,
+								fontWeight: 600,
+								lineHeight: 1.6,
+								color: answers[i]?.trim() ? "#1A2B4A" : "#9AA7BE",
+								whiteSpace: "pre-wrap",
+								background: "#F5F7FB",
+								borderRadius: 12,
+								padding: "12px 14px",
+								minHeight: 40,
+							}}
+						>
+							{answers[i]?.trim() || "（写在纸上了）"}
+						</div>
+					</div>
+				))}
+
+				<div
+					style={{
+						fontSize: 16,
+						fontWeight: 800,
+						color: "#1A2B4A",
+						textAlign: "center",
+						margin: "20px 0 12px",
+					}}
+				>
+					给孩子的作品评分：
+				</div>
+				<div
+					style={{
+						display: "flex",
+						justifyContent: "center",
+						flexWrap: "wrap",
+						gap: 12,
+						marginBottom: 18,
+					}}
+				>
+					{ratings.map((r) => (
+						<BigButton
+							key={r.stars}
+							color="#FFD93D"
+							shadow="#C99800"
+							onClick={() => {
+								SFX.badge();
+								onRate(r.stars);
+							}}
+						>
+							{r.label}
+						</BigButton>
+					))}
+				</div>
+				<div style={{ display: "flex", justifyContent: "center" }}>
+					<BigButton color="#FFFFFF" shadow="#1A2B4A" onClick={onRetry}>
+						让孩子再写一次
+					</BigButton>
+				</div>
+			</div>
+		</div>
+	);
+}
+
 /* ---------- Wrapper that runs through a quiz ---------- */
 export interface QuizResult {
 	stars: number;
@@ -1157,6 +1464,23 @@ export function QuizRunner({
 	const total = quiz.questions.length;
 	const q = quiz.questions[qIdx];
 
+	// A free-writing quiz (看图写话) isn't auto-graded: no hearts, no first-try
+	// scoring — the child writes, then a parent awards the stars at the end.
+	const isWriting = quiz.questions.every((qq) => qq.type === "write");
+	const [answers, setAnswers] = useState<string[]>(() =>
+		quiz.questions.map(() => ""),
+	);
+
+	// Advance through a writing quiz without any correct/wrong scoring.
+	const advanceWrite = () => {
+		if (qIdx + 1 >= total) {
+			setShowResult(true);
+			SFX.badge();
+		} else {
+			setQIdx(qIdx + 1);
+		}
+	};
+
 	// `firstTry` is true when the child got it right with no wrong attempts.
 	// In retry mode they always reach the answer, so we never end early on
 	// hearts — every question gets finished. Hearts are a gentle "first-try"
@@ -1173,6 +1497,25 @@ export function QuizRunner({
 			setQIdx(qIdx + 1);
 		}
 	};
+
+	if (showResult && isWriting) {
+		const seconds = Math.round((Date.now() - startedAt) / 1000);
+		return (
+			<ParentReview
+				quiz={quiz}
+				answers={answers}
+				onRate={(stars) =>
+					onComplete({ stars, correct: total, total, seconds })
+				}
+				onRetry={() => {
+					setQIdx(0);
+					setAnswers(quiz.questions.map(() => ""));
+					setStartedAt(Date.now());
+					setShowResult(false);
+				}}
+			/>
+		);
+	}
 
 	if (showResult) {
 		const stars =
@@ -1230,15 +1573,36 @@ export function QuizRunner({
 				<div style={{ flex: 1, maxWidth: 500 }}>
 					<ProgressBar value={qIdx / total} color="#4ECDC4" height={18} />
 				</div>
-				<div style={{ display: "flex", gap: 4 }}>
-					{[0, 1, 2].map((i) => (
-						<span key={i} style={{ opacity: i < hearts ? 1 : 0.2 }}>
-							<Heart size={28} />
-						</span>
-					))}
-				</div>
+				{isWriting ? (
+					<span style={{ fontSize: 26 }}>✍️</span>
+				) : (
+					<div style={{ display: "flex", gap: 4 }}>
+						{[0, 1, 2].map((i) => (
+							<span key={i} style={{ opacity: i < hearts ? 1 : 0.2 }}>
+								<Heart size={28} />
+							</span>
+						))}
+					</div>
+				)}
 			</div>
 
+			{q.type === "write" && (
+				<WriteQuestion
+					key={qIdx}
+					question={q}
+					value={answers[qIdx]}
+					onChange={(v) =>
+						setAnswers((prev) => {
+							const copy = [...prev];
+							copy[qIdx] = v;
+							return copy;
+						})
+					}
+					onDone={advanceWrite}
+					qNum={qIdx + 1}
+					qTotal={total}
+				/>
+			)}
 			{q.type === "mc" && (
 				<MCQuestion
 					key={qIdx}

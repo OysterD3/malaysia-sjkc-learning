@@ -65,7 +65,16 @@ export interface DailyTask {
 	progress?: number;
 }
 
-export type QuestionType = "mc" | "match" | "fill" | "spell" | "tap" | "memory";
+export type QuestionType =
+	| "mc"
+	| "match"
+	| "fill"
+	| "spell"
+	| "tap"
+	| "memory"
+	// Open-ended free writing (看图写话). Not auto-graded — the parent reviews
+	// the child's writing and awards the stars at the end.
+	| "write";
 
 export interface MatchPair {
 	left: string;
@@ -87,6 +96,8 @@ export interface Question {
 	hint?: string;
 	items?: TapItem[];
 	time?: number;
+	// Sentence-starters / hints shown for a `write` (看图写话) prompt.
+	tips?: string[];
 	// Shown as a friendly hint when the child picks a wrong answer (retry mode).
 	explain?: string;
 	// When set, the question renders this character as animated SVG strokes
@@ -945,49 +956,33 @@ export const QUIZZES: Record<string, Quiz> = {
 		],
 	},
 
-	// K — 看图写话 (pick the sentences that describe the picture)
+	// K — 看图写话. Open-ended free writing: the child writes a few sentences
+	// with the tips as scaffolding, and a parent reviews + awards the stars.
 	zh_k: {
 		title: "K 看图写话",
-		subtitle: "看图，点出所有正确的句子",
+		subtitle: "看图，自己写一写。写好了请爸爸妈妈看一看～",
 		questions: [
 			{
-				type: "tap",
-				q: "看图：小女孩在浇花",
+				type: "write",
+				q: "看图：小女孩在浇花。\n看一看，写两三句话。",
 				image: "watering",
-				items: [
-					{ label: "她在浇花。", correct: true },
-					{ label: "花儿很美丽。", correct: true },
-					{ label: "她很开心。", correct: true },
-					{ label: "天在下雪。", correct: false },
-					{ label: "小狗在睡觉。", correct: false },
-					{ label: "鱼儿在天上飞。", correct: false },
+				tips: [
+					"先写：谁？在做什么？",
+					"再写：在什么地方？",
+					"可以加上：她的心情怎么样？",
+					"例：早上，小女孩在花园里浇花，她很开心。",
 				],
-				time: 18,
 			},
 			{
-				type: "tap",
-				q: "看图：小朋友在游乐场玩",
+				type: "write",
+				q: "看图：小朋友在游乐场玩。\n看一看，写两三句话。",
 				image: "slide",
-				items: [
-					{ label: "他们在游乐场。", correct: true },
-					{ label: "大家玩得很开心。", correct: true },
-					{ label: "他们在玩滑梯。", correct: true },
-					{ label: "全家在吃晚饭。", correct: false },
-					{ label: "小蜜蜂采花蜜。", correct: false },
+				tips: [
+					"先写：谁？在哪里？",
+					"再写：他们在做什么？",
+					"可以加上：玩得怎么样？",
+					"例：放学后，小朋友们在游乐场玩滑梯，大家玩得很开心。",
 				],
-				time: 18,
-			},
-			{
-				type: "mc",
-				q: "看图：大家排队打饭\n哪一句最适合做开头？",
-				image: "lineup-food",
-				choices: [
-					"下课了，大家排队打饭。",
-					"弟弟在玩玩具车。",
-					"香蕉弯弯像滑梯。",
-				],
-				answer: 0,
-				explain: "看图写话要先写「谁在做什么」，图里大家在排队打饭。",
 			},
 		],
 	},
